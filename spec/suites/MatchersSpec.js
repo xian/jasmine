@@ -318,10 +318,36 @@ describe("jasmine.Matchers", function() {
     expect(match(37).toBeLessThan(37)).toEqual(false);
   });
 
+  it("toBeLessThan to build an ExpectationResult", function() {
+    var matcher = match(3);
+    matcher.toBeLessThan(1);
+
+    var result = matcher.results().getItems()[0];
+
+    expect(result.matcherName).toEqual("toBeLessThan");
+    expect(result.passed()).toEqual(false);
+    expect(result.message).toEqual("Expected is not less than actual");
+    expect(result.actual).toEqual(3);
+    expect(result.expected).toEqual(1);
+  });
+
   it("toBeGreaterThan should pass if actual is greater than expected", function() {
     expect(match(37).toBeGreaterThan(42)).toEqual(false);
     expect(match(37).toBeGreaterThan(-42)).toEqual(true);
     expect(match(37).toBeGreaterThan(37)).toEqual(false);
+  });
+
+  it("toBeGreaterThan to build an ExpectationResult", function() {
+    var matcher = match(1);
+    matcher.toBeGreaterThan(3);
+
+    var result = matcher.results().getItems()[0];
+
+    expect(result.matcherName).toEqual("toBeGreaterThan");
+    expect(result.passed()).toEqual(false);
+    expect(result.message).toEqual("Expected is not greater than actual");
+    expect(result.actual).toEqual(1);
+    expect(result.expected).toEqual(3);
   });
 
   it("toThrow", function() {
@@ -356,7 +382,6 @@ describe("jasmine.Matchers", function() {
     expect(match(TestClass.someFunction).wasCalled()).toEqual(false);
     expect(match(TestClass.someFunction).wasNotCalled()).toEqual(true);
 
-
     TestClass.someFunction();
     expect(match(TestClass.someFunction).wasCalled()).toEqual(true);
     expect(match(TestClass.someFunction).wasCalled('some arg')).toEqual(false);
@@ -375,80 +400,6 @@ describe("jasmine.Matchers", function() {
     expect(expected.wasCalledWith('a', 'b', 'c')).toEqual(true);
     expect(expected.wasCalledWith('d', 'e', 'f')).toEqual(true);
     expect(expected.wasCalledWith('x', 'y', 'z')).toEqual(false);
-
-  });
-
-  xit("should report mismatches in some nice way", function() {
-    var results = new jasmine.NestedResults();
-    var expected = new jasmine.Matchers(env, true, results);
-    expected.toEqual(true);
-    expected.toEqual(false);
-
-    expect(results.getItems().length).toEqual(2);
-
-    expect(results.getItems()[0].passed()).toEqual(true);
-
-    expect(results.getItems()[1].passed()).toEqual(false);
-
-    results = new jasmine.NestedResults();
-    expected = new jasmine.Matchers(env, false, results);
-    expected.toEqual(true);
-
-    var expectedMessage = 'Expected<br /><br />true<br /><br />but got<br /><br />false<br />';
-    expect(results.getItems()[0].message).toEqual(expectedMessage);
-
-    results = new jasmine.NestedResults();
-    expected = new jasmine.Matchers(env, null, results);
-    expected.toEqual('not null');
-
-    expectedMessage = 'Expected<br /><br />\'not null\'<br /><br />but got<br /><br />null<br />';
-    expect(results.getItems()[0].message).toEqual(expectedMessage);
-
-    results = new jasmine.NestedResults();
-    expected = new jasmine.Matchers(env, undefined, results);
-    expected.toEqual('not undefined');
-
-    expectedMessage = 'Expected<br /><br />\'not undefined\'<br /><br />but got<br /><br />undefined<br />';
-    expect(results.getItems()[0].message).toEqual(expectedMessage);
-
-
-    results = new jasmine.NestedResults();
-    expected = new jasmine.Matchers(env, {foo:'one',baz:'two', more: 'blah'}, results);
-    expected.toEqual({foo:'one', bar: '<b>three</b> &', baz: '2'});
-
-    expectedMessage =
-    "Expected<br /><br />{ foo : 'one', bar : '&lt;b&gt;three&lt;/b&gt; &amp;', baz : '2' }<br /><br />but got<br /><br />{ foo : 'one', baz : 'two', more : 'blah' }<br />" +
-    "<br /><br />Different Keys:<br />" +
-    "expected has key 'bar', but missing from <b>actual</b>.<br />" +
-    "<b>expected</b> missing key 'more', but present in actual.<br />" +
-    "<br /><br />Different Values:<br />" +
-    "'bar' was<br /><br />'&lt;b&gt;three&lt;/b&gt; &amp;'<br /><br />in expected, but was<br /><br />'undefined'<br /><br />in actual.<br /><br />" +
-    "'baz' was<br /><br />'2'<br /><br />in expected, but was<br /><br />'two'<br /><br />in actual.<br /><br />";
-    var actualMessage = results.getItems()[0].message;
-    expect(actualMessage).toEqual(expectedMessage);
-
-
-    results = new jasmine.NestedResults();
-    expected = new jasmine.Matchers(env, true, results);
-    expected.toEqual(true);
-
-    expect(results.getItems()[0].message).toEqual('Passed.');
-
-
-    expected = new jasmine.Matchers(env, [1, 2, 3], results);
-    results.getItems().length = 0;
-    expected.toEqual([1, 2, 3]);
-    expect(results.getItems()[0].passed()).toEqual(true);
-
-    expected = new jasmine.Matchers(env, [1, 2, 3], results);
-    results.getItems().length = 0;
-    expected.toEqual([{}, {}, {}]);
-    expect(results.getItems()[0].passed()).toEqual(false);
-
-    expected = new jasmine.Matchers(env, [{}, {}, {}], results);
-    results.getItems().length = 0;
-    expected.toEqual([1, 2, 3]);
-    expect(results.getItems()[0].passed()).toEqual(false);
   });
 
 });
