@@ -38,11 +38,21 @@ jasmine.MessageResult = function(text) {
   this.trace = new Error(); // todo: test better
 };
 
-jasmine.ExpectationResult = function(passed, message, details) {
+//jasmine.ExpectationResult = function(passed, message, details) {
+//  this.type = 'ExpectationResult';
+//  this.passed_ = passed;
+//  this.message = message;
+//  this.details = details;
+//  this.trace = new Error(message); // todo: test better
+//};
+
+jasmine.ExpectationResult = function(matcherName, passed, message, expected, actual, details) {
   this.type = 'ExpectationResult';
+  this.matcherName = matcherName;
   this.passed_ = passed;
   this.message = message;
-  this.details = details;
+  this.expected = expected;
+  this.actual = actual;
   this.trace = new Error(message); // todo: test better
 };
 

@@ -9,13 +9,6 @@ describe("jasmine.Matchers", function() {
     return new jasmine.Matchers(env, value);
   }
 
-  function detailsFor(actual, matcherName, matcherArgs) {
-    var matcher = match(actual);
-    matcher[matcherName].apply(matcher, matcherArgs);
-    expect(matcher.results().getItems().length).toEqual(1);
-    return matcher.results().getItems()[0].details;
-  }
-
   it("toEqual with primitives, objects, dates, html nodes, etc.", function() {
     expect(match(true).toEqual(true)).toEqual(true);
 
@@ -48,6 +41,30 @@ describe("jasmine.Matchers", function() {
     expect((match(['a', 'b']).toEqual(['a', 'b', undefined]))).toEqual(false);
   });
 
+  it("toEqual to build an Expectation Result", function() {
+    var matcher = match('a');
+    matcher.toEqual('b')
+    var result = matcher.results()[0];
+    
+    expect(result.matcherName).toEqual("toEqual");
+    expect(result.passed()).toEqual(false);
+    expect(result.message).toEqual("Expected does not equal actual");
+    expect(result.expected).toEqual("a");
+    expect(result.actual).toEqual("b");
+  });
+
+  it("toNotEqual to build an Expectation Result", function() {
+    var matcher = match('a');
+    matcher.toEqual('a')
+    var result = matcher.results()[0];
+
+    expect(result.matcherName).toEqual("toNotEqual");
+    expect(result.passed()).toEqual(false);
+    expect(result.message).toEqual("Expected and actual are not equal, but should be");
+    expect(result.expected).toEqual("a");
+    expect(result.actual).toEqual("a");
+  });
+
   it('toBe should return true only if the expected and actual items === each other', function() {
     var a = {};
     var b = {};
@@ -61,6 +78,32 @@ describe("jasmine.Matchers", function() {
     expect((match(a).toNotBe(c))).toEqual(false);
   });
 
+  it("toBe to build an ExpectationResult", function() {
+    var matcher = match('a');
+    matcher.toBe('b');
+
+    var result = matcher.results().getItems()[0];
+
+    expect(result.matcherName).toEqual("toBe");
+    expect(result.passed()).toEqual(false);
+    expect(result.message).toEqual("Expected and actual are not the same object");
+    expect(result.expected).toEqual("b");
+    expect(result.actual).toEqual("a");
+  });
+
+  it("toNotBe to build an ExpectationResult", function() {
+    var a = 'a';
+    var matcher = match(a);
+    matcher.toNotBe(a);
+
+    var result = matcher.results().getItems()[0];
+
+    expect(result.matcherName).toEqual("toNotBe");
+    expect(result.passed()).toEqual(false);
+    expect(result.message).toEqual("Expected and actual are the same object, but should not be");
+    expect(result.expected).toEqual(a);
+    expect(result.actual).toEqual(a);
+  });
 
   it("toMatch and #toNotMatch should perform regular expression matching on strings", function() {
     expect((match('foobarbel').toMatch(/bar/))).toEqual(true);
@@ -76,9 +119,53 @@ describe("jasmine.Matchers", function() {
     expect((match('foobazbel').toNotMatch("bar"))).toEqual(true);
   });
 
+  it("toMatch to build an ExpectationResult", function() {
+    var matcher = match('a');
+    matcher.toMatch(/b/);
+
+    var result = matcher.results().getItems()[0];
+
+    expect(result.matcherName).toEqual("toMatch");
+    expect(result.passed()).toEqual(false);
+    expect(result.message).toEqual("Expected does not match actual, but it should");
+    expect(result.expected).toEqual(/b/);
+    expect(result.actual).toEqual("a");
+  });
+
+  it("toNotMatch to build an ExpectationResult", function() {
+    var matcher = match('a');
+    matcher.toNotMatch(/a/);
+
+    var result = matcher.results().getItems()[0];
+
+    expect(result.matcherName).toEqual("toNotMatch");
+    expect(result.passed()).toEqual(false);
+    expect(result.message).toEqual("Expected matches actual, but should not");
+    expect(result.expected).toEqual(/a/);
+    expect(result.actual).toEqual("a");    
+  });
+
   it("toBeDefined", function() {
     expect(match('foo').toBeDefined()).toEqual(true);
     expect(match(undefined).toBeDefined()).toEqual(false);
+  });
+
+  it("toBeDefined to build an ExpectationResult", function() {
+    var matcher = match(undefined);
+    matcher.toBeDefined();
+
+    var result = matcher.results().getItems()[0];
+
+    expect(result.matcherName).toEqual("toBeDefined");
+    expect(result.passed()).toEqual(false);
+    expect(result.message).toEqual('Expected a value to be defined but it was undefined.');
+    expect(result.actual).toEqual(undefined);
+  });
+
+  // TODO: IMPLEMENTTHISDAMMIT
+  xit("toBeUndefined", function() {
+    expect(match('foo').toBeUndefined()).toEqual(false);
+    expect(match(undefined).toBeUndefined()).toEqual(true);
   });
 
   it("toBeNull", function() {
@@ -87,12 +174,36 @@ describe("jasmine.Matchers", function() {
     expect(match("foo").toBeNull()).toEqual(false);
   });
 
+  it("toBeNull to build an ExpectationResult", function() {
+    var matcher = match('a');
+    matcher.toBeNull();
+
+    var result = matcher.results().getItems()[0];
+
+    expect(result.matcherName).toEqual("toBeNull");
+    expect(result.passed()).toEqual(false);
+    expect(result.message).toEqual("Expected a value to be null, but it was not");
+    expect(result.actual).toEqual('a');
+  });
+
   it("toBeFalsy", function() {
     expect(match(false).toBeFalsy()).toEqual(true);
     expect(match(true).toBeFalsy()).toEqual(false);
     expect(match(undefined).toBeFalsy()).toEqual(true);
     expect(match(0).toBeFalsy()).toEqual(true);
     expect(match("").toBeFalsy()).toEqual(true);
+  });
+
+  it("toBeFalsy to build an ExpectationResult", function() {
+    var matcher = match('a');
+    matcher.toBeFalsy();
+
+    var result = matcher.results().getItems()[0];
+
+    expect(result.matcherName).toEqual("toBeFalsy");
+    expect(result.passed()).toEqual(false);
+    expect(result.message).toEqual("Expected a value to be falsy, but it was not");
+    expect(result.actual).toEqual('a');
   });
 
   it("toBeTruthy", function() {
@@ -104,6 +215,18 @@ describe("jasmine.Matchers", function() {
     expect(match("hi").toBeTruthy()).toEqual(true);
     expect(match(5).toBeTruthy()).toEqual(true);
     expect(match({foo: 1}).toBeTruthy()).toEqual(true);
+  });
+
+  it("toBeTruthy to build an ExpectationResult", function() {
+    var matcher = match(false);
+    matcher.toBeTruthy();
+
+    var result = matcher.results().getItems()[0];
+
+    expect(result.matcherName).toEqual("toBeTruthy");
+    expect(result.passed()).toEqual(false);
+    expect(result.message).toEqual("Expected a value to be truthy, but it was not");
+    expect(result.actual).toEqual(false);
   });
 
   it("toEqual", function() {
@@ -161,10 +284,32 @@ describe("jasmine.Matchers", function() {
 
     expect(match(['A', {some:'object'}, 'C']).toContain({some:'object'})).toEqual(true);
     expect(match(['A', {some:'object'}, 'C']).toContain({some:'other object'})).toEqual(false);
+  });
 
-    expect(detailsFor('abc', 'toContain', ['x'])).toEqual({
-      matcherName: 'toContain', expected: 'x', actual: 'abc'
-    });
+  it("toContain to build an ExpectationResult", function() {
+    var matcher = match(['a','b','c']);
+    matcher.toContain('x');
+
+    var result = matcher.results().getItems()[0];
+
+    expect(result.matcherName).toEqual("toContain");
+    expect(result.passed()).toEqual(false);
+    expect(result.message).toEqual('Actual does not contain expected, but it should');
+    expect(result.actual).toEqual(['a','b','c']);
+    expect(result.expected).toEqual('x');
+  });
+
+  it("toNotContain to build an ExpectationResult", function() {
+    var matcher = match(['a','b','c']);
+    matcher.toNotContain('b');
+
+    var result = matcher.results().getItems()[0];
+
+    expect(result.matcherName).toEqual("toNotContain");
+    expect(result.passed()).toEqual(false);
+    expect(result.message).toEqual("Actual contains expected, but should not");
+    expect(result.actual).toEqual(['a','b','c']);
+    expect(result.expected).toEqual('b');
   });
 
   it("toBeLessThan should pass if actual is less than expected", function() {
@@ -231,13 +376,9 @@ describe("jasmine.Matchers", function() {
     expect(expected.wasCalledWith('d', 'e', 'f')).toEqual(true);
     expect(expected.wasCalledWith('x', 'y', 'z')).toEqual(false);
 
-    expect(detailsFor(TestClass.someFunction, 'wasCalledWith', ['x', 'y', 'z'])).toEqual({
-      matcherName: 'wasCalledWith', expected: ['x', 'y', 'z'], actual: TestClass.someFunction.argsForCall
-    });
-
   });
 
-  it("should report mismatches in some nice way", function() {
+  xit("should report mismatches in some nice way", function() {
     var results = new jasmine.NestedResults();
     var expected = new jasmine.Matchers(env, true, results);
     expected.toEqual(true);
