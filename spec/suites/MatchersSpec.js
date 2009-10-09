@@ -121,7 +121,7 @@ describe("jasmine.Matchers", function() {
     expect((match('foobazbel').toNotMatch("bar"))).toEqual(true);
   });
 
-  it("toMatch to build an ExpectationResult", function() {
+  it("toMatch w/ RegExp to build an ExpectationResult", function() {
     var matcher = match('a');
     matcher.toMatch(/b/);
 
@@ -129,12 +129,25 @@ describe("jasmine.Matchers", function() {
 
     expect(result.matcherName).toEqual("toMatch");
     expect(result.passed()).toEqual(false);
-    expect(result.message).toEqual("Expected does not match actual, but it should");
-    expect(result.expected.toString()).toEqual(/b/.toString());
+    expect(result.message).toEqual("a does not match the regular expression /b/");
+    expect(result.expected.toString()).toEqual("/b/");
     expect(result.actual).toEqual("a");
   });
 
-  it("toNotMatch to build an ExpectationResult", function() {
+  it("toMatch w/ String to build an ExpectationResult", function() {
+    var matcher = match('a');
+    matcher.toMatch("b");
+
+    var result = matcher.results().getItems()[0];
+
+    expect(result.matcherName).toEqual("toMatch");
+    expect(result.passed()).toEqual(false);
+    expect(result.message).toEqual("a does not match the regular expression /b/");
+    expect(result.expected.toString()).toEqual("b");
+    expect(result.actual).toEqual("a");
+  });
+
+  it("toNotMatch w/ RegExp to build an ExpectationResult", function() {
     var matcher = match('a');
     matcher.toNotMatch(/a/);
 
@@ -142,9 +155,22 @@ describe("jasmine.Matchers", function() {
 
     expect(result.matcherName).toEqual("toNotMatch");
     expect(result.passed()).toEqual(false);
-    expect(result.message).toEqual("Expected matches actual, but should not");
-    expect(result.expected.toString()).toEqual(/a/.toString());
+    expect(result.message).toEqual("a matches the regular expression /a/, but should not");
+    expect(result.expected.toString()).toEqual("/a/");
     expect(result.actual).toEqual("a");    
+  });
+
+  it("toNotMatch w/ String to build an ExpectationResult", function() {
+    var matcher = match('a');
+    matcher.toNotMatch('a');
+
+    var result = matcher.results().getItems()[0];
+
+    expect(result.matcherName).toEqual("toNotMatch");
+    expect(result.passed()).toEqual(false);
+    expect(result.message).toEqual("a matches the regular expression /a/, but should not");
+    expect(result.expected.toString()).toEqual('a');
+    expect(result.actual).toEqual("a");
   });
 
   it("toBeDefined", function() {
@@ -176,7 +202,7 @@ describe("jasmine.Matchers", function() {
     expect(match("foo").toBeNull()).toEqual(false);
   });
 
-  it("toBeNull to build an ExpectationResult", function() {
+  it("toBeNull w/ String to build an ExpectationResult", function() {
     var matcher = match('a');
     matcher.toBeNull();
 
@@ -184,8 +210,20 @@ describe("jasmine.Matchers", function() {
 
     expect(result.matcherName).toEqual("toBeNull");
     expect(result.passed()).toEqual(false);
-    expect(result.message).toEqual("Expected a value to be null, but it was not");
+    expect(result.message).toEqual("Expected 'a' to be null, but it was not");
     expect(result.actual).toEqual('a');
+  });
+
+  it("toBeNull w/ Object to build an ExpectationResult", function() {
+    var matcher = match({a: 'b'});
+    matcher.toBeNull();
+
+    var result = matcher.results().getItems()[0];
+
+    expect(result.matcherName).toEqual("toBeNull");
+    expect(result.passed()).toEqual(false);
+    expect(result.message).toEqual("Expected [object Object] to be null, but it was not");
+    expect(result.actual).toEqual({a: 'b'});
   });
 
   it("toBeFalsy", function() {

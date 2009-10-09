@@ -68,21 +68,18 @@ jasmine.Matchers.prototype.toNotBe = function(expected) {
 jasmine.Matchers.prototype.toEqual = function(expected) {
   var mismatchKeys = [];
   var mismatchValues = [];
-
-  var formatMismatches = function(name, array) {
-    if (array.length == 0) return '';
-    var errorOutput = '<br /><br />Different ' + name + ':<br />';
-    for (var i = 0; i < array.length; i++) {
-      errorOutput += array[i] + '<br />';
-    }
-    return errorOutput;
-  };
+  var isEqual = this.env.equals_(this.actual, expected, mismatchKeys, mismatchValues);
+  var failMessage = "Expected does not equal actual";
 
   return this.report(
     "toEqual",
-    this.env.equals_(this.actual, expected, mismatchKeys, mismatchValues),
-    "Expected does not equal actual",
-    expected
+    isEqual,
+    failMessage,
+    expected,
+    {
+      mismatchKeys: mismatchKeys,
+      mismatchValues: mismatchValues
+    }
   );
 };
 /** @deprecated */
@@ -110,10 +107,14 @@ jasmine.Matchers.prototype.should_not_equal = jasmine.Matchers.prototype.toNotEq
  * @param reg_exp
  */
 jasmine.Matchers.prototype.toMatch = function(reg_exp) {
+
+  var regExp = new RegExp(reg_exp);
+  var failMessage = this.actual + " does not match the regular expression " + regExp.toString();
+
   return this.report(
     "toMatch",
-    (new RegExp(reg_exp).test(this.actual)),
-    "Expected does not match actual, but it should",
+    (regExp.test(this.actual)),
+    failMessage,
     reg_exp
   );
 };
@@ -125,10 +126,14 @@ jasmine.Matchers.prototype.should_match = jasmine.Matchers.prototype.toMatch;
  * @param reg_exp
  */
 jasmine.Matchers.prototype.toNotMatch = function(reg_exp) {
+
+  var regExp = new RegExp(reg_exp);
+  var failMessage = this.actual + " matches the regular expression " + regExp.toString() + ", but should not";
+
   return this.report(
     "toNotMatch",
-    !(new RegExp(reg_exp).test(this.actual)),
-    "Expected matches actual, but should not",
+    !(regExp.test(this.actual)),
+    failMessage,
     reg_exp
   );
 };
@@ -153,10 +158,17 @@ jasmine.Matchers.prototype.should_be_defined = jasmine.Matchers.prototype.toBeDe
  *
  */
 jasmine.Matchers.prototype.toBeNull = function() {
+  var failMessage = '';
+
+  if (this.actual) {
+    var objectAsString = typeof this.actual == 'string' ? "'" + this.actual +"'" : this.actual.toString();
+    failMessage = "Expected " + objectAsString +" to be null, but it was not";
+  }
+
   return this.report(
     "toBeNull",
     (this.actual === null),
-    "Expected a value to be null, but it was not"
+    failMessage
   );
 };
 /** @deprecated */
