@@ -36,7 +36,6 @@ describe("jasmine spec running", function () {
     expect(it4.id).toEqual(4);
   });
 
-
   it("should build up some objects with results we can inspect", function() {
 
     var specWithNoBody, specWithExpectation, specWithFailingExpectations, specWithMultipleExpectations;

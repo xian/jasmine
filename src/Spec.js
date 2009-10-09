@@ -87,7 +87,14 @@ jasmine.Spec.prototype.waitsFor = function(timeout, latchFunction, timeoutMessag
 };
 
 jasmine.Spec.prototype.fail = function (e) {
-  this.results_.addResult(new jasmine.ExpectationResult(false, e ? jasmine.util.formatException(e) : null, null));
+  this.results_.addResult(
+      new jasmine.ExpectationResult(
+      "specFail",
+      false,
+      e ? jasmine.util.formatException(e) : null, null,
+      e
+    )
+  );
 };
 
 jasmine.Spec.prototype.getMatchersClass_ = function() {

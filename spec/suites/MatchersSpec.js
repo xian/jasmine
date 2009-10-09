@@ -43,24 +43,26 @@ describe("jasmine.Matchers", function() {
 
   it("toEqual to build an Expectation Result", function() {
     var matcher = match('a');
-    matcher.toEqual('b')
-    var result = matcher.results()[0];
+    matcher.toEqual('b');
+
+    var result = matcher.results().getItems()[0];
     
     expect(result.matcherName).toEqual("toEqual");
     expect(result.passed()).toEqual(false);
     expect(result.message).toEqual("Expected does not equal actual");
-    expect(result.expected).toEqual("a");
-    expect(result.actual).toEqual("b");
+    expect(result.expected).toEqual("b");
+    expect(result.actual).toEqual("a");
   });
 
   it("toNotEqual to build an Expectation Result", function() {
     var matcher = match('a');
-    matcher.toEqual('a')
-    var result = matcher.results()[0];
+    matcher.toNotEqual('a')
+
+    var result = matcher.results().getItems()[0];
 
     expect(result.matcherName).toEqual("toNotEqual");
     expect(result.passed()).toEqual(false);
-    expect(result.message).toEqual("Expected and actual are not equal, but should be");
+    expect(result.message).toEqual("Expected and actual are equal, but should not be");
     expect(result.expected).toEqual("a");
     expect(result.actual).toEqual("a");
   });
@@ -128,7 +130,7 @@ describe("jasmine.Matchers", function() {
     expect(result.matcherName).toEqual("toMatch");
     expect(result.passed()).toEqual(false);
     expect(result.message).toEqual("Expected does not match actual, but it should");
-    expect(result.expected).toEqual(/b/);
+    expect(result.expected.toString()).toEqual(/b/.toString());
     expect(result.actual).toEqual("a");
   });
 
@@ -141,7 +143,7 @@ describe("jasmine.Matchers", function() {
     expect(result.matcherName).toEqual("toNotMatch");
     expect(result.passed()).toEqual(false);
     expect(result.message).toEqual("Expected matches actual, but should not");
-    expect(result.expected).toEqual(/a/);
+    expect(result.expected.toString()).toEqual(/a/.toString());
     expect(result.actual).toEqual("a");    
   });
 

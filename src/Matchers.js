@@ -96,7 +96,7 @@ jasmine.Matchers.prototype.toNotEqual = function(expected) {
   return this.report(
     "toNotEqual",
     !this.env.equals_(this.actual, expected),
-    "Expected and actual are not equal, but should be",
+    "Expected and actual are equal, but should not be",
     expected
   );
 };
