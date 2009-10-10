@@ -76,6 +76,7 @@ jasmine.Matchers.prototype.toEqual = function(expected) {
     failMessage,
     expected,
     {
+      type: "diff",
       mismatchKeys: mismatchKeys,
       mismatchValues: mismatchValues
     }
@@ -279,7 +280,10 @@ jasmine.Matchers.prototype.toContain = function(item) {
     "toContain",
     this.env.contains_(this.actual, item),
     'Actual does not contain expected, but it should',
-    item
+    item,
+    {
+      type: "diff"
+    }
   );
 };
 

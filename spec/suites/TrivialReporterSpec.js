@@ -83,12 +83,13 @@ describe("TrivialReporter", function() {
     });
 
     it("should add the failure messages to the DOM (toEquals matchers)", function() {
-      expectationResult = new jasmine.ExpectationResult("toEqual",
+      expectationResult = new jasmine.ExpectationResult("anyMatcherName",
             false,
             "Expected does not equal actual; foo; bar;",
             'foo',
             'bar',
             {
+              type: "diff",
               mismatchKeys: ["a string", "another string"],
               mismatchValues: ["a value"]
             });
@@ -96,9 +97,27 @@ describe("TrivialReporter", function() {
       trivialReporter.reportFailure(expectationResult, errorDiv);
 
       var divs = errorDiv.getElementsByTagName("div");
-      expect(divs[0].innerHTML).toContain('Expected<span class="expected result">\'foo\'</span>but got<span class="actual result">\'bar\'</span>');
+      expect(divs[0].innerHTML).toContain('Expected <span class="actual result">\'bar\'</span> anyMatcherName <span class="expected result">\'foo\'</span>');
      });
 
+    it("should not escape text too much or too little", function() {
+      expectationResult = new jasmine.ExpectationResult("anyMatcherName",
+            false,
+            "Expected does not equal actual; foo; bar;",
+            'a<b',
+            '<script>alert("fail!!!")</script>',
+            {
+              type: "diff",
+              mismatchKeys: ["a string", "another string"],
+              mismatchValues: ["a value"]
+            });
+
+      trivialReporter.reportFailure(expectationResult, errorDiv);
+
+      var divs = errorDiv.getElementsByTagName("div");
+      expect(divs[0].innerHTML).toContain('a&lt;b');
+      expect(divs[0].innerHTML).toContain('&lt;script&gt;');
+    });
 
   });
 
