@@ -20,17 +20,16 @@ jasmine.Matchers.prototype.results = function() {
 
 // TODO: no need to call w/ actual
 jasmine.Matchers.prototype.report = function(matcherName, result, failing_message, expected, details) {
-  this.results_.addResult(
-    new jasmine.ExpectationResult(
-      matcherName,
-      result,
-      result ? this.passing_message : failing_message,
-      expected,
-      this.actual,
-      details
-    )
-  );
-  return result;
+  var expectationResult = new jasmine.ExpectationResult(
+    matcherName,
+    result,
+    result ? this.passing_message : failing_message,
+    expected,
+    this.actual,
+    details
+      );
+  this.results_.addResult(expectationResult);
+  return expectationResult;
 };
 
 /**
