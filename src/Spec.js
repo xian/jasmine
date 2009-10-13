@@ -71,7 +71,10 @@ jasmine.Spec.prototype.expects_that = function(actual) {
 };
 
 jasmine.Spec.prototype.expect = function(actual) {
-  return new (this.getMatchersClass_())(this.env, actual, this.results_);
+  var matchersClass = this.getMatchersClass_();
+  var matcher = new (matchersClass)(this.env, actual, this.results_, false);
+  matcher.not = new (matchersClass)(this.env, actual, this.results_, true);
+  return matcher;
 };
 
 jasmine.Spec.prototype.waits = function(timeout) {

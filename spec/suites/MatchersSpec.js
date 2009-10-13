@@ -1,8 +1,9 @@
 describe("jasmine.Matchers", function() {
-  var env;
+  var env, spec;
   
   beforeEach(function() {
     env = new jasmine.Env();
+    spec = new jasmine.Spec(env, {}, "");
 
     this.addMatchers({
       toPass: function() {
@@ -21,7 +22,7 @@ describe("jasmine.Matchers", function() {
   });
   
   function match(value) {
-    return new jasmine.Matchers(env, value);
+    return spec.expect(value);
   }
 
   it("toEqual with primitives, objects, dates, html nodes, etc.", function() {
@@ -67,6 +68,24 @@ describe("jasmine.Matchers", function() {
     expect(result.message).toEqual("Expected does not equal actual");
     expect(result.expected).toEqual("b");
     expect(result.actual).toEqual("a");
+  });
+
+  describe(".not", function() {
+    it(".toEqual should be inverted from regular .toEqual", function() {
+      expect(match(true).not.toEqual(true)).toFail();
+      expect(match(true).toEqual(true)).not.toFail();
+    });
+
+    it("should work with custom matchers", function() {
+      var customMatcher = function() {
+      };
+      spec.addMatchers({
+        someCustomMatcher: customMatcher
+      });
+
+      expect(match(true).someCustomMatcher).toBeDefined();
+      expect(match(true).not.someCustomMatcher).toBeDefined();
+    });
   });
 
   it("toNotEqual to build an Expectation Result", function() {

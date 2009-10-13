@@ -1,8 +1,9 @@
-jasmine.Matchers = function(env, actual, results) {
+jasmine.Matchers = function(env, actual, results, opt_isNot) {
   this.env = env;
   this.actual = actual;
   this.passing_message = 'Passed.';
   this.results_ = results || new jasmine.NestedResults();
+  this.isNot_ = opt_isNot || false;
 };
 
 jasmine.Matchers.pp = function(str) {
@@ -20,13 +21,16 @@ jasmine.Matchers.prototype.results = function() {
 
 // TODO: no need to call w/ actual
 jasmine.Matchers.prototype.report = function(matcherName, result, failing_message, expected, details) {
+  if (this.isNot_) {
+    result = !result;
+  }
   var expectationResult = new jasmine.ExpectationResult(
-    matcherName,
-    result,
-    result ? this.passing_message : failing_message,
-    expected,
-    this.actual,
-    details
+      matcherName,
+      result,
+      result ? this.passing_message : failing_message,
+      expected,
+      this.actual,
+      details
       );
   this.results_.addResult(expectationResult);
   return expectationResult;
